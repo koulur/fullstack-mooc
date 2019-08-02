@@ -15,9 +15,9 @@ const Part = ( {props} ) => {
     )
 }
 const Content = ({parts}) => (
-    <div>
+    <>
         {parts.map((part, index) => (<Part props={part} key={index}/>))}
-    </div>
+    </>
 )
 
 const Total = ({parts}) => (
