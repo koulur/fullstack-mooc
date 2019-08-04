@@ -7,24 +7,36 @@ const Button = ({ handleClick, text}) => {
     )
 }
 
+const Statistic = ({ text, value }) => {
+    return (
+        <>
+        {text + ' '} {value} 
+        <br/>
+        </>
+    )
+}
+
 const Statistics = ({ good, neutral, bad}) => {
     const all = good + neutral + bad
     const average = (good - bad)/all
     const percentagePositive = 100 * good/all
+    if (good === 0 & bad === 0 & neutral === 0) {
+        return (
+        <div>
+            <h2>Statistics</h2>
+            No feedback given!
+        </div>
+        )
+    }
     return (
         <div>
         <h2> Statistics </h2>
-        {'good ' + good} 
-        <br/>
-        {'neutral ' + neutral}
-        <br/>
-        {'bad ' + bad}
-        <br/>
-        {'all ' + all}
-        <br/>
-        {'average ' + average}
-        <br/>
-        {'positive ' + percentagePositive + '%'}
+        <Statistic text='good' value={good}/> 
+        <Statistic text='neutral' value={neutral}/>
+        <Statistic text='bad' value={bad}/> 
+        <Statistic text='all' value={all}/> 
+        <Statistic text='average' value={average}/> 
+        <Statistic text='positive' value={percentagePositive+'%'}/> 
         </div>
     )
 }
