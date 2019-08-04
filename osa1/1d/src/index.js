@@ -8,6 +8,9 @@ const Button = ({ handleClick, text}) => {
 }
 
 const Statistics = ({ good, neutral, bad}) => {
+    const all = good + neutral + bad
+    const average = (good - bad)/all
+    const percentagePositive = 100 * good/all
     return (
         <div>
         <h2> Statistics </h2>
@@ -16,6 +19,12 @@ const Statistics = ({ good, neutral, bad}) => {
         {'neutral ' + neutral}
         <br/>
         {'bad ' + bad}
+        <br/>
+        {'all ' + all}
+        <br/>
+        {'average ' + average}
+        <br/>
+        {'positive ' + percentagePositive + '%'}
         </div>
     )
 }
@@ -27,7 +36,7 @@ const App = () => {
 
     const goodClick = () => {
         setGood(good + 1)
-        console.log('good clicked', good)
+        console.log('good clicked', good + 1)
     }
 
     const neutralClick = () => {
