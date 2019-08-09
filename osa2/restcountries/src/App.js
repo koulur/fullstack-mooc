@@ -34,6 +34,7 @@ const Country = ({ country }) => {
 function App() {
   const [countryName, setCountryName] = useState('')
   const [countries, setCountries] = useState([])
+  const [showCountry, setShowCountry] = useState('')
 
   useEffect( () => {
   axios
@@ -49,6 +50,10 @@ function App() {
 
   const handleNameChange = (e) => {
     setCountryName(e.target.value)
+  }
+
+  const handleShowCountry = (countryName) => () => {
+      setShowCountry(countryName)
   }
 
   
@@ -74,7 +79,15 @@ function App() {
     return (
       <div>
         <Input countryName={countryName} handleNameChange={handleNameChange} />
-        {countries.map((country) => <p key={country.name}>{country.name + `\n`}</p>)}
+        {countries.map((country) => (
+            <div>
+              <p key={country.name}>{country.name}</p>
+              <button id={country.name} onClick={handleShowCountry(country.name)}>show</button>
+              {showCountry===country.name && <Country country={country}/> }
+            </div>
+            )
+          )
+        }
       </div>
     )
   }
