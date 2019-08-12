@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import {getAll, create, remove, replace} from './services/persons'
 
 
-const Numbers = ({ persons, newFilter }) => {
-  console.log('persons from number: ', persons)
+const Numbers = ({ persons, newFilter, handleRemove }) => {
   const filtered = persons.filter((person) => person !== undefined).filter((person) => person.name.includes(newFilter))
   return (
     <div>
       <h2>Numbers</h2>
     <table>
       <tbody>
-        {filtered.map((person) => 
-        (<tr key={person.name}>
+        {filtered.map((person, index) => 
+        (<tr key={index}>
           <td>
             {person.name}
           </td>
           <td>
             {person.number}
+          </td>
+          <td>
+            <button onClick={handleRemove(person.id)}>remove</button>
           </td>
         </tr>))}
       </tbody>
@@ -59,12 +61,7 @@ const App = () => {
   const [newPerson, setNewPerson] = useState()
 
   useEffect(() => {
-    console.log('persons from useEffect: ', persons)
-    axios
-        .get('http://localhost:3001/persons')
-        .then(response => {
-          setPersons(response.data)
-        })
+    getAll(setPersons)
   }, [newPerson])
   
 
@@ -86,31 +83,29 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if(persons.findIndex(
-            element => element.name === newName
-        ) !== -1 ) {
-      alert(`${newName} is already added to phonebook`)
-      return
+    if(persons.findIndex(element => element.name === newName) !== -1 ) {
+      if(window.confirm(`${newName} is already in the phonebook. Would you like to replace the old number?`)) {
+        replace({person: {...persons.find(person => person.name === newName), number: newNumber}, persons, setPersons})
+        return
+      }
     }
     setNewPerson({name: newName, number: newNumber})
     setPersons(persons.concat(newPerson))
     
+    create({newName, newNumber, setNewName, setNewNumber})
+  }
 
-    axios.post('http://localhost:3001/persons', 
-              {name: newName, number: newNumber})
-          .then(() => {
-            setNewName('')
-            setNewNumber('')
-            }
-          )
-
+  const handleRemove = (id) => () => {
+    if(window.confirm(`Are you sure you want to remove ${persons.find(person => person.id === id).name}?`)){
+      remove({id, persons, setPersons})
+    }
   }
 
   
   return (
     <div>
       <Filter newFilter={ newFilter } 
-                handleNewFilter={ handleNewFilter }/>
+              handleNewFilter={ handleNewFilter }/>
 
       <Form newName={ newName } 
             handleNewName={ handleNewName } 
@@ -119,10 +114,10 @@ const App = () => {
             handleSubmit={ handleSubmit } />
 
       <Numbers persons={ persons } 
-               newFilter={ newFilter } />
+               newFilter={ newFilter }
+               handleRemove={ handleRemove} />
     </div>
   )
-
 }
 
 
