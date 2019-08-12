@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import {getAll, create, remove, replace} from './services/persons'
 
 
+
 const Numbers = ({ persons, newFilter, handleRemove }) => {
   const filtered = persons.filter((person) => person !== undefined).filter((person) => person.name.includes(newFilter))
   return (
@@ -54,6 +55,40 @@ const Form = (props) => {
   )
 }
 
+const Notification = ({message, status}) => {
+  const successNotification = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  
+  const errorNotification = {
+    color: 'red',
+    background: 'darkgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+
+  if(message !== null) {
+    return (
+      <div style={status ? successNotification : errorNotification}>
+        {message}
+      </div>
+    )
+  }
+  return (
+    <></>
+  )
+
+}
+
 
 
 const App = () => {
@@ -68,6 +103,9 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setNewFilter ] = useState('')
+
+  const [ status, setStatus ] = useState()
+  const [ message, setMessage ] = useState(null)
 
   const handleNewName = (e) => {
     setNewName(e.target.value)
@@ -85,25 +123,30 @@ const App = () => {
     e.preventDefault()
     if(persons.findIndex(element => element.name === newName) !== -1 ) {
       if(window.confirm(`${newName} is already in the phonebook. Would you like to replace the old number?`)) {
-        replace({person: {...persons.find(person => person.name === newName), number: newNumber}, persons, setPersons})
+        replace({person: {...persons.find(person => person.name === newName), number: newNumber}, 
+                persons, 
+                setPersons,
+                setMessage,
+                setStatus})
         return
       }
     }
     setNewPerson({name: newName, number: newNumber})
     setPersons(persons.concat(newPerson))
     
-    create({newName, newNumber, setNewName, setNewNumber})
+    create({newName, newNumber, setNewName, setNewNumber, setMessage, setStatus})
   }
 
   const handleRemove = (id) => () => {
     if(window.confirm(`Are you sure you want to remove ${persons.find(person => person.id === id).name}?`)){
-      remove({id, persons, setPersons})
+      remove({id, persons, setPersons, setStatus, setMessage})
     }
   }
 
   
   return (
     <div>
+      <Notification message={message} status={status} />
       <Filter newFilter={ newFilter } 
               handleNewFilter={ handleNewFilter }/>
 
