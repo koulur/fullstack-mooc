@@ -41,15 +41,21 @@ const App = () => {
               name: 'Middlewares',
               exercises: 7,
               id: 2
-            }
+            },
+            {
+              name: 'Routing',
+              exercises: 3,
+              id: 3
+            },
           ]
         }
       ]
   
     return (
       <div>
-        <Course course={courses[0]} />
-        <Course course={courses[1]} />
+        {courses.map(course => (
+           <Course course={course} />
+        ))}
       </div>
     )
   }
