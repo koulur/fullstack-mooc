@@ -9,15 +9,16 @@ const getAll = async (setPersons) => {
     return setPersons(response.data);
 }
 
+
 const create = ({newName, newNumber, setNewName, setNewNumber, setMessage, setStatus}) => {
     const name = newName
+    
     axios.post(url, 
               {name: newName, number: newNumber})
           .then(() => {
             setStatus(true)
             setMessage(`Succesfully created an entry for ${name}`)
             
-
             setNewName('')
             setNewNumber('')
 
