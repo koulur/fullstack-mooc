@@ -42,11 +42,6 @@ const App = () => {
               exercises: 7,
               id: 2
             },
-            {
-              name: 'Routing',
-              exercises: 3,
-              id: 3
-            },
           ]
         }
       ]
