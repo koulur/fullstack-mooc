@@ -10,17 +10,20 @@ const getAll = async (setPersons) => {
 }
 
 
-const create = ({newName, newNumber, setNewName, setNewNumber, setMessage, setStatus}) => {
+const create = ({newName, newNumber, setNewName, setNewNumber, setMessage, setStatus, setPersons, persons}) => {
     const name = newName
     
     axios.post(url, 
               {name: newName, number: newNumber})
-          .then(() => {
+          .then(response => {
             setStatus(true)
+            console.log('response: ', response)
             setMessage(`Succesfully created an entry for ${name}`)
-            
+            setPersons([...persons, response.data])
+
             setNewName('')
             setNewNumber('')
+            
 
             setTimeout(() => {
                 setMessage(null)
@@ -29,7 +32,11 @@ const create = ({newName, newNumber, setNewName, setNewNumber, setMessage, setSt
           )
           .catch((error) => {
               setStatus(false)
-              setMessage(`Was not able to successfully create an entry for ${name}`)
+              setMessage(error.response.data.error)
+              console.log('Error in UI: ', error.response.data.error)
+
+              setNewName('')
+              setNewNumber('')
 
               setTimeout(() => {
                 setMessage(null)
@@ -65,7 +72,7 @@ const remove = ({id, persons, setPersons, setMessage, setStatus}) => {
           )
 }
 
-const replace = ({person, persons, setPersons, setMessage, setStatus}) => {
+const replace = ({person, persons, setPersons, setMessage, setStatus, setNewName, setNewNumber}) => {
     axios.put(`${url}/${person.id}`, person)
          .then(response => {
             console.log(response)
@@ -75,6 +82,8 @@ const replace = ({person, persons, setPersons, setMessage, setStatus}) => {
                 [...persons.filter(element => element.id !== person.id), person]
             )
 
+            setNewName('')
+            setNewNumber('')
 
             setTimeout(() => {
                 setMessage(null)

@@ -121,20 +121,23 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    console.log(persons.map(element => element))
     if(persons.findIndex(element => element.name === newName) !== -1 ) {
       if(window.confirm(`${newName} is already in the phonebook. Would you like to replace the old number?`)) {
         replace({person: {...persons.find(person => person.name === newName), number: newNumber}, 
                 persons, 
                 setPersons,
                 setMessage,
-                setStatus})
+                setStatus,
+                setNewName,
+                setNewNumber})
         return
       }
     }
     setNewPerson({name: newName, number: newNumber})
     setPersons(persons.concat(newPerson))
     
-    create({newName, newNumber, setNewName, setNewNumber, setMessage, setStatus})
+    create({newName, newNumber, setNewName, setNewNumber, setMessage, setStatus, setPersons, persons})
   }
 
   const handleRemove = (id) => () => {
