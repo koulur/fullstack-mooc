@@ -12,17 +12,6 @@ const blogSchema = mongoose.Schema({
 })
 
 
-// const mongoUrl = config.MONGODB_URI
-
-// mongoose.connect(mongoUrl, { useNewUrlParser: true })
-//             .then(response => {
-//                 console.log(response)
-//             })
-//             .catch(error => {
-//                 console.log(error)
-// })
-
-
 blogSchema.set('toJSON', {
     transform: (document, returnedObject) => {
       returnedObject.id = returnedObject._id.toString()

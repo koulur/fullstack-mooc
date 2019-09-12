@@ -1,0 +1,9 @@
+PUT http://localhost:3003/api/blogs/5d6e8b81589cf546244150ca
+Content-Type: application/json
+
+{
+"title": "Siddhartha Mukherjee",
+"author": "Emperor of all Maladies",
+"url": "https://www.amazon.com/Emperor-All-Maladies-Biography-Cancer/dp/1439170916",
+"likes": 10
+}
