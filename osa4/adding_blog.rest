@@ -1,9 +1,12 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJhbWkzIiwiaWQiOiI1ZDdjZjQyMzQwM2VkZjE1YjE0ODdmOGMiLCJpYXQiOjE1Njg0NzAxMzJ9.e6Cw8vPxbnwLyqNBd8W0k1XSxxz-uueUzHpmEcSEU0Q
+
 
 {
-  "title": "Narnia",
-  "author": "C S Lewis",
+  "title": "Test number 2",
+  "author": "Someone new",
   "url": "https://www.google.com/search?q=Narnia",
-  "likes": 2
+  "likes": 2,
+  "userId": "5d7cf423403edf15b1487f8c"
 }
