@@ -2,6 +2,7 @@ import React from "react"
 import { useEffect, useState } from "react"
 import blogService from "./services/blogs"
 import loginService from "./services/login"
+import Blog from "./components/Blog"
 
 const Notification = ({ message }) => {
   if (message) {
@@ -10,13 +11,107 @@ const Notification = ({ message }) => {
     }
     return <div style={{ backgroundColor: "green" }}>{message.text}</div>
   } else {
-    return <div></div>
+    return <div>{message}</div>
   }
 }
 
+const CreateBlog = ({ setCreateBlogVisible }) => (
+  <button onClick={() => setCreateBlogVisible(true)}>new blog</button>
+)
+
+const Cancel = ({ setCreateBlogVisible }) => (
+  <button
+    style={{ marginLeft: "0.5em" }}
+    onClick={() => setCreateBlogVisible(false)}
+  >
+    cancel
+  </button>
+)
+
+const BlogForm = ({
+  addBlog,
+  newAuthor,
+  newTitle,
+  newUrl,
+  setNewAuthor,
+  setNewTitle,
+  setNewUrl,
+  createBlogVisible,
+  setCreateBlogVisible
+}) => {
+  const hideWhenVisible = { display: createBlogVisible ? "none" : "" }
+  const showWhenVisible = { display: createBlogVisible ? "" : "none" }
+
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+        <CreateBlog setCreateBlogVisible={setCreateBlogVisible} />
+      </div>
+      <div style={showWhenVisible}>
+        <h3>Add a new blog!</h3>
+        <form onSubmit={addBlog}>
+          <input
+            placeholder="author"
+            style={{ borderColor: "black" }}
+            value={newAuthor}
+            onChange={({ target }) => setNewAuthor(target.value)}
+          />
+          <input
+            placeholder="title"
+            style={{ borderColor: "black" }}
+            value={newTitle}
+            onChange={({ target }) => setNewTitle(target.value)}
+          />
+          <input
+            placeholder="url"
+            style={{ borderColor: "black" }}
+            value={newUrl}
+            onChange={({ target }) => setNewUrl(target.value)}
+          />
+          <button style={{ marginLeft: "0.5em" }} type="submit">
+            create
+          </button>
+        </form>
+        <Cancel setCreateBlogVisible={setCreateBlogVisible} />
+      </div>
+    </div>
+  )
+}
+
+const LoginForm = ({
+  handleLogin,
+  username,
+  setUsername,
+  password,
+  setPassword
+}) => (
+  <form onSubmit={handleLogin}>
+    <div>
+      username
+      <input
+        style={{ borderColor: "black" }}
+        type="text"
+        value={username}
+        name="Username"
+        onChange={({ target }) => setUsername(target.value)}
+      />
+    </div>
+    <div>
+      password
+      <input
+        style={{ borderColor: "black" }}
+        type="password"
+        value={password}
+        name="Password"
+        onChange={({ target }) => setPassword(target.value)}
+      />
+    </div>
+    <button type="submit">login</button>
+  </form>
+)
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
-
   const [message, setMessage] = useState(null)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -24,6 +119,7 @@ const App = () => {
   const [newTitle, setNewTitle] = useState("")
   const [newAuthor, setNewAuthor] = useState("")
   const [newUrl, setNewUrl] = useState("")
+  const [createBlogVisible, setCreateBlogVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(initialBlogs => {
@@ -60,41 +156,13 @@ const App = () => {
     }
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          style={{ borderColor: "black" }}
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          style={{ borderColor: "black" }}
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
-
-  const Blog = ({ blog }) => <p>{blog.title}</p>
-
   const logOut = () => {
     window.localStorage.clear()
     setUser(null)
   }
 
   const addBlog = e => {
-    e.preventDefault()
+    // e.preventDefault()
     const blogObject = {
       author: newAuthor,
       title: newTitle,
@@ -125,39 +193,22 @@ const App = () => {
       })
   }
 
-  const blogForm = () => (
-    <div>
-      <h3>Add a new blog!</h3>
-      <form onSubmit={addBlog}>
-        <input
-          placeholder="author"
-          style={{ borderColor: "black" }}
-          value={newAuthor}
-          onChange={({ target }) => setNewAuthor(target.value)}
-        />
-        <input
-          placeholder="title"
-          style={{ borderColor: "black" }}
-          value={newTitle}
-          onChange={({ target }) => setNewTitle(target.value)}
-        />
-        <input
-          placeholder="url"
-          style={{ borderColor: "black" }}
-          value={newUrl}
-          onChange={({ target }) => setNewUrl(target.value)}
-        />
-        <button type="submit">create</button>
-      </form>
-    </div>
-  )
-
   if (user) {
     return (
       <div>
         <Notification message={message} />
         <div style={{ display: "flex" }}>
-          {blogForm()}
+          <BlogForm
+            addBlog={addBlog}
+            newAuthor={newAuthor}
+            setNewAuthor={setNewAuthor}
+            newTitle={newTitle}
+            setNewTitle={setNewTitle}
+            newUrl={newUrl}
+            setNewUrl={setNewUrl}
+            createBlogVisible={createBlogVisible}
+            setCreateBlogVisible={setCreateBlogVisible}
+          />
           <button
             style={{
               backgroundColor: "orange",
@@ -172,9 +223,21 @@ const App = () => {
         </div>
         <h2>blogs</h2>
         <div>
-          {blogs.map(blog => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
+          {blogs
+            .filter(e => e.likes)
+            .sort((a, b) => b.likes - a.likes)
+            .map(blog => (
+              <Blog
+                key={blog.id}
+                user={user}
+                blog={blog}
+                blogs={blogs}
+                newAuthor={newAuthor}
+                newTitle={newTitle}
+                setBlogs={setBlogs}
+                setMessage={setMessage}
+              />
+            ))}
         </div>
       </div>
     )
@@ -183,7 +246,14 @@ const App = () => {
     <div>
       <h1>Notes</h1>
       <Notification message={message} />
-      {loginForm()}
+      {/* {loginForm()} */}
+      <LoginForm
+        username={username}
+        password={password}
+        handleLogin={handleLogin}
+        setUsername={setUsername}
+        setPassword={setPassword}
+      />
     </div>
   )
 }
