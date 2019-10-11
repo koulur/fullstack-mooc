@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import blogService from "./services/blogs"
 import loginService from "./services/login"
 import Blog from "./components/Blog"
+import PropTypes from "prop-types"
 
 const Notification = ({ message }) => {
   if (message) {
@@ -19,6 +20,10 @@ const CreateBlog = ({ setCreateBlogVisible }) => (
   <button onClick={() => setCreateBlogVisible(true)}>new blog</button>
 )
 
+CreateBlog.propTypes = {
+  setCreateBlogVisible: PropTypes.func.isRequired
+}
+
 const Cancel = ({ setCreateBlogVisible }) => (
   <button
     style={{ marginLeft: "0.5em" }}
@@ -27,6 +32,10 @@ const Cancel = ({ setCreateBlogVisible }) => (
     cancel
   </button>
 )
+
+Cancel.propTypes = {
+  setCreateBlogVisible: PropTypes.func.isRequired
+}
 
 const BlogForm = ({
   addBlog,
@@ -110,6 +119,14 @@ const LoginForm = ({
   </form>
 )
 
+LoginForm.propTypes = {
+  handleLogin: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+  setUsername: PropTypes.func.isRequired,
+  setPassword: PropTypes.func.isRequired
+}
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState(null)
@@ -120,7 +137,7 @@ const App = () => {
   const [newAuthor, setNewAuthor] = useState("")
   const [newUrl, setNewUrl] = useState("")
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
-
+  // window.blogs = blogs
   useEffect(() => {
     blogService.getAll().then(initialBlogs => {
       setBlogs(initialBlogs)
@@ -162,30 +179,33 @@ const App = () => {
   }
 
   const addBlog = e => {
-    // e.preventDefault()
+    e.preventDefault()
     const blogObject = {
       author: newAuthor,
       title: newTitle,
-      likes: Math.floor(Math.random() * 20),
+      likes: 0,
       url: newUrl
     }
 
     blogService
       .create(blogObject)
       .then(data => {
+        console.log("data: ", data)
         setBlogs(blogs.concat(data))
-        setMessage(
-          `Succesfully created a blog entry for ${newTitle} by ${newAuthor}`
-        )
+        console.log(blogs)
+        setMessage({
+          text: `Succesfully created a blog entry for ${newTitle} by ${newAuthor}`
+        })
 
         setNewAuthor("")
         setNewTitle("")
         setNewUrl("")
         setTimeout(() => {
+          console.log("blogs in timeout: ", blogs)
           setMessage(null)
         }, 5000)
       })
-      .catch(e => {
+      .catch(() => {
         setMessage({ text: "Failed to create the blog!", error: true })
         setTimeout(() => {
           setMessage(null)
@@ -224,7 +244,7 @@ const App = () => {
         <h2>blogs</h2>
         <div>
           {blogs
-            .filter(e => e.likes)
+            .filter(e => typeof e.likes === "number")
             .sort((a, b) => b.likes - a.likes)
             .map(blog => (
               <Blog
@@ -246,7 +266,6 @@ const App = () => {
     <div>
       <h1>Notes</h1>
       <Notification message={message} />
-      {/* {loginForm()} */}
       <LoginForm
         username={username}
         password={password}

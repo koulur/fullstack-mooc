@@ -9,7 +9,10 @@ const setToken = newToken => {
 
 const getAll = () => {
   const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+
+  return request.then(response => {
+    return response.data
+  })
 }
 
 const create = async newObject => {
@@ -18,6 +21,7 @@ const create = async newObject => {
   }
 
   const response = await axios.post(baseUrl, newObject, config)
+
   return response.data
 }
 

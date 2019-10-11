@@ -47,15 +47,16 @@ const Blog = ({
         .del(id)
         .then(data => {
           setMessage({ text: `Succesfully removed ${title} by ${author}.` })
-          setTimeout(e => setMessage(""), 3000)
+          setTimeout(() => setMessage(""), 3000)
           setBlogs(blogs.filter(bloggy => bloggy.id !== id))
+          return data
         })
-        .catch(e => {
+        .catch(() => {
           setMessage({
-            text: `Was unable to remove the blog post.`,
+            text: "Was unable to remove the blog post.",
             error: true
           })
-          setTimeout(e => setMessage(""), 3000)
+          setTimeout(() => setMessage(""), 3000)
         })
     }
   }
@@ -73,14 +74,6 @@ const Blog = ({
               style={{ backgroundColor: "pink" }}
               onClick={() => remove(blog)}
             >
-              {console.log(
-                "blog.user: ",
-                blog.user,
-                " user.username: ",
-                user.username,
-                " blog.user.username: ",
-                blog.user.username
-              )}
               remove
             </button>
           )}
