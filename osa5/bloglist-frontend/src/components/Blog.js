@@ -64,7 +64,7 @@ const Blog = ({
   return (
     <div>
       {show ? (
-        <div style={layoutStyle} onClick={onClickShow}>
+        <div className="full" style={layoutStyle} onClick={onClickShow}>
           <p>{blog.title}</p>
           <p>{blog.author}</p>
           <p>{blog.url}</p>
@@ -79,7 +79,9 @@ const Blog = ({
           )}
         </div>
       ) : (
-        <p onClick={onClickShow}>{blog.title}</p>
+        <p className="title" onClick={onClickShow}>
+          {blog.title}
+        </p>
       )}
     </div>
   )

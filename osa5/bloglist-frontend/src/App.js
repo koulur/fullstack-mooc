@@ -94,7 +94,7 @@ const LoginForm = ({
   password,
   setPassword
 }) => (
-  <form onSubmit={handleLogin}>
+  <form className="loginForm" onSubmit={handleLogin}>
     <div>
       username
       <input
@@ -215,7 +215,7 @@ const App = () => {
 
   if (user) {
     return (
-      <div>
+      <div className="loggedIn">
         <Notification message={message} />
         <div style={{ display: "flex" }}>
           <BlogForm
@@ -263,8 +263,9 @@ const App = () => {
     )
   }
   return (
-    <div>
-      <h1>Notes</h1>
+    <div className="notLoggedIn">
+      <h1>Notes.</h1>
+      <h2>Please log in to create and browse blogs.</h2>
       <Notification message={message} />
       <LoginForm
         username={username}
