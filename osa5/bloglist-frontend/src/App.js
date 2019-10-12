@@ -5,6 +5,13 @@ import loginService from "./services/login"
 import Blog from "./components/Blog"
 import PropTypes from "prop-types"
 
+import { useField } from "./hooks"
+const Input = ({ reset, ...noReset }) => {
+  // console.log(reset)
+  // console.log("noReset: ", noReset)
+  // window.inputNameField = reset
+  return <input {...noReset}></input>
+}
 const Notification = ({ message }) => {
   if (message) {
     if (message.error) {
@@ -38,15 +45,18 @@ Cancel.propTypes = {
 }
 
 const BlogForm = ({
+  // newAuthor,
+  // newTitle,
+  // newUrl,
+  // setNewAuthor,
+  // setNewTitle,
+  // setNewUrl,
   addBlog,
-  newAuthor,
-  newTitle,
-  newUrl,
-  setNewAuthor,
-  setNewTitle,
-  setNewUrl,
   createBlogVisible,
-  setCreateBlogVisible
+  setCreateBlogVisible,
+  urlField,
+  authorField,
+  titleField
 }) => {
   const hideWhenVisible = { display: createBlogVisible ? "none" : "" }
   const showWhenVisible = { display: createBlogVisible ? "" : "none" }
@@ -59,23 +69,38 @@ const BlogForm = ({
       <div style={showWhenVisible}>
         <h3>Add a new blog!</h3>
         <form onSubmit={addBlog}>
-          <input
-            placeholder="author"
+          {/* <input
             style={{ borderColor: "black" }}
+            placeholder="author"
             value={newAuthor}
             onChange={({ target }) => setNewAuthor(target.value)}
-          />
-          <input
-            placeholder="title"
+          /> */}
+          <Input
             style={{ borderColor: "black" }}
+            placeholder="author"
+            {...authorField}
+          />
+          {/* <input
+            style={{ borderColor: "black" }}
+            placeholder="title"
             value={newTitle}
             onChange={({ target }) => setNewTitle(target.value)}
-          />
-          <input
-            placeholder="url"
+          /> */}
+          <Input
             style={{ borderColor: "black" }}
+            placeholder="title"
+            {...titleField}
+          />
+          {/* <input
+            style={{ borderColor: "black" }}
+            placeholder="url"
             value={newUrl}
             onChange={({ target }) => setNewUrl(target.value)}
+          /> */}
+          <Input
+            style={{ borderColor: "black" }}
+            placeholder="url"
+            {...urlField}
           />
           <button style={{ marginLeft: "0.5em" }} type="submit">
             create
@@ -88,17 +113,20 @@ const BlogForm = ({
 }
 
 const LoginForm = ({
+  // username,
+  // setUsername,
+  // password,
+  // setPassword,
   handleLogin,
-  username,
-  setUsername,
-  password,
-  setPassword
-}) => (
-  <form className="loginForm" onSubmit={handleLogin}>
-    <div>
+  nameField,
+  passwordField
+}) => {
+  return (
+    <form className="loginForm" onSubmit={handleLogin}>
+      {/* <div>
       username
       <input
-        style={{ borderColor: "black" }}
+        style={{ borderColor: "black", marginLeft: "0.5em" }}
         type="text"
         value={username}
         name="Username"
@@ -108,35 +136,55 @@ const LoginForm = ({
     <div>
       password
       <input
-        style={{ borderColor: "black" }}
-        type="password"
+        style={{ borderColor: "black", marginLeft: "0.5em" }}
+        type="text"
         value={password}
         name="Password"
         onChange={({ target }) => setPassword(target.value)}
       />
-    </div>
-    <button type="submit">login</button>
-  </form>
-)
+    </div> */}
+      <div>
+        username
+        <Input {...nameField} />
+      </div>
+
+      <div>
+        password
+        <Input {...passwordField} />
+      </div>
+      <button type="submit">login</button>
+    </form>
+  )
+}
 
 LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
-  password: PropTypes.string.isRequired,
-  setUsername: PropTypes.func.isRequired,
-  setPassword: PropTypes.func.isRequired
+  handleLogin: PropTypes.func.isRequired
+  // username: PropTypes.string.isRequired,
+  // password: PropTypes.string.isRequired,
+  // setUsername: PropTypes.func.isRequired,
+  // setPassword: PropTypes.func.isRequired
 }
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState(null)
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  // const [username, setUsername] = useState("")
+  // const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
   const [newTitle, setNewTitle] = useState("")
   const [newAuthor, setNewAuthor] = useState("")
   const [newUrl, setNewUrl] = useState("")
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
+
+  const nameField = useField("text")
+  const passwordField = useField("password")
+
+  const urlField = useField("text")
+  const authorField = useField("text")
+  const titleField = useField("text")
+
+  window.nameField = nameField
+
   // window.blogs = blogs
   useEffect(() => {
     blogService.getAll().then(initialBlogs => {
@@ -157,14 +205,18 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username,
-        password
+        // username,
+        // password
+        username: nameField.value,
+        password: passwordField.value
       })
       window.localStorage.setItem("loggedBlogUser", JSON.stringify(user))
 
       setUser(user)
-      setUsername("")
-      setPassword("")
+      // setUsername("")
+      // setPassword("")
+      nameField.onChange({ target: "" })
+      passwordField.onChange({ target: "" })
     } catch (exception) {
       setMessage({ text: "wrong credentials", error: true })
       setTimeout(() => {
@@ -181,10 +233,11 @@ const App = () => {
   const addBlog = e => {
     e.preventDefault()
     const blogObject = {
-      author: newAuthor,
-      title: newTitle,
+      author: authorField.value,
+      //used to be newTitle, etc.
+      title: titleField.value,
       likes: 0,
-      url: newUrl
+      url: urlField.value
     }
 
     blogService
@@ -197,9 +250,12 @@ const App = () => {
           text: `Succesfully created a blog entry for ${newTitle} by ${newAuthor}`
         })
 
-        setNewAuthor("")
-        setNewTitle("")
-        setNewUrl("")
+        // setNewAuthor("")
+        // setNewTitle("")
+        // setNewUrl("")
+        authorField.reset()
+        titleField.reset()
+        urlField.reset()
         setTimeout(() => {
           console.log("blogs in timeout: ", blogs)
           setMessage(null)
@@ -228,6 +284,9 @@ const App = () => {
             setNewUrl={setNewUrl}
             createBlogVisible={createBlogVisible}
             setCreateBlogVisible={setCreateBlogVisible}
+            urlField={urlField}
+            authorField={authorField}
+            titleField={titleField}
           />
           <button
             style={{
@@ -252,8 +311,16 @@ const App = () => {
                 user={user}
                 blog={blog}
                 blogs={blogs}
-                newAuthor={newAuthor}
-                newTitle={newTitle}
+                /////
+                /////
+                /////
+                /////
+                /////
+                //authorField.value
+                // newAuthor={newAuthor}
+                authorOf={blog.author}
+                title={blog.title}
+                // newTitle={newTitle}
                 setBlogs={setBlogs}
                 setMessage={setMessage}
               />
@@ -268,11 +335,15 @@ const App = () => {
       <h2>Please log in to create and browse blogs.</h2>
       <Notification message={message} />
       <LoginForm
-        username={username}
-        password={password}
+        // username={username}
+        // password={password}
+        // setUsername={setUsername}
+        // setPassword={setPassword}
+        passwordField={passwordField}
+        nameField={nameField}
+        username={nameField.value}
+        password={passwordField.value}
         handleLogin={handleLogin}
-        setUsername={setUsername}
-        setPassword={setPassword}
       />
     </div>
   )

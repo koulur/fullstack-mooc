@@ -2,15 +2,7 @@ import React from "react"
 import { useState } from "react"
 import blogService from "../services/blogs"
 
-const Blog = ({
-  blog,
-  user,
-  blogs,
-  newAuthor,
-  newTitle,
-  setBlogs,
-  setMessage
-}) => {
+const Blog = ({ blog, user, blogs, authorOf, title, setBlogs, setMessage }) => {
   const [show, setShow] = useState(false)
 
   const layoutStyle = {
@@ -32,7 +24,8 @@ const Blog = ({
     }
     blogService.update(newObject).then(data => {
       setBlogs(blogs.filter(o => o.id !== newObject.id).concat(data))
-      setMessage(`Liked ${newTitle} by ${newAuthor}`)
+      setMessage({ text: `Liked ${title} by ${authorOf}` })
+      console.log("past message")
       setTimeout(() => {
         setMessage(null)
       }, 5000)
